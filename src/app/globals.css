@@ -56,3 +56,6 @@
   opacity: 1;
   transition: 0s;
 }
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
