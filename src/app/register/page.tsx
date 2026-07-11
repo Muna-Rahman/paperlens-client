@@ -6,15 +6,15 @@ import Link from "next/link";
 import { z } from "zod";
 import { UserPlus, Eye, EyeOff, Terminal } from "lucide-react";
 
-// 🛡️ 1. Define the validation schema rules using Zod
+// 🛡️ 1. Set up form validation rules using Zod
 const registerSchema = z.object({
-  name: z.string().min(2, { message: "IDENTITY_REQUIRED: Name parameter must contain at least 2 symbols." }),
-  email: z.string().email({ message: "MALFORMED_STRING: Payload syntax must match an operational email." }),
-  password: z.string().min(6, { message: "BIT_LENGTH_SHORT: Passphrase density must equal or exceed 6 symbols." }),
+  name: z.string().min(2, { message: "Please enter a name that is at least 2 characters long." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(6, { message: "Your password must be at least 6 characters long." }),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "MISMATCH_DETECTED: Target verify passphrase does not match original original array key.",
-  path: ["confirmPassword"],
+  message: "The passwords you typed do not match.",
+  path: ["confirmPassword"], // Attaches the error message directly to the confirmPassword field
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -22,16 +22,16 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
 
-  // Controlled component payload states
+  // Controlled form states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Visibility toggle state
+  // Password visibility state toggle
   const [showPass, setShowPass] = useState(false);
 
-  // Clean field inline error catch records
+  // Catch dynamic field validation errors
   const [fieldErrors, setFieldErrors] = useState<{ [K in keyof RegisterFormValues]?: string }>({});
   const [systemAlert, setSystemAlert] = useState<string | null>(null);
 
@@ -40,38 +40,43 @@ export default function RegisterPage() {
     setFieldErrors({});
     setSystemAlert(null);
 
+    // Run form values through the Zod validator
     const result = registerSchema.safeParse({ name, email, password, confirmPassword });
 
     if (!result.success) {
       const errorsObj: typeof fieldErrors = {};
+      
+      // Extract errors cleanly and map them to the proper inputs
       result.error.issues.forEach((issue) => {
         const pathKey = issue.path[0] as keyof RegisterFormValues;
         errorsObj[pathKey] = issue.message;
       });
+      
       setFieldErrors(errorsObj);
       return;
     }
 
-    setSystemAlert("SYS_STATUS: Registration array successfully validated. Proceed to integrate Node backend pipelines.");
+    // Temporary placeholder message until backend API routes are integrated
+    setSystemAlert("Your account details look great! You can now proceed to wire up the backend API endpoints.");
   };
 
   return (
     <div className="max-w-md mx-auto py-6 px-4 flex flex-col items-center justify-center min-h-[calc(100vh-12rem)]">
       
-      {/* 🧊 Glass Registration Housing */}
+      {/* 🧊 Glass-themed Registration Card */}
       <div className="w-full glass-card p-6 sm:p-8 rounded-lg border border-[#E9D4C3]/10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A1A1A] via-[#7C8FA9] to-transparent" />
         
-        {/* Section Header */}
+        {/* Card Header */}
         <div className="flex flex-col items-center text-center mb-6">
           <div className="w-10 h-10 rounded-full border border-[#8A1A1A]/30 bg-[#8A1A1A]/5 flex items-center justify-center mb-2">
             <UserPlus className="w-4 h-4 text-[#8A1A1A]" />
           </div>
-          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// INITIALIZE_NEW_OPERATOR</span>
-          <h1 className="font-display text-xl font-bold text-white tracking-tight mt-0.5">SYS_REGISTRATION</h1>
+          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// GET STARTED</span>
+          <h1 className="font-display text-xl font-bold text-white tracking-tight mt-0.5">CREATE ACCOUNT</h1>
         </div>
 
-        {/* Global Notification Banner */}
+        {/* Global Success Notification Banner */}
         {systemAlert && (
           <div className="mb-4 p-2.5 bg-[#E9D4C3]/5 border border-[#8A1A1A]/30 rounded flex items-start space-x-2 font-mono text-[10px] text-[#E9D4C3]">
             <Terminal className="w-3.5 h-3.5 mt-0.5 text-[#8A1A1A] shrink-0" />
@@ -79,12 +84,12 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Main Enrollment Form */}
+        {/* Main Sign Up Form */}
         <form onSubmit={handleRegistrationSequence} className="space-y-3.5">
           
           {/* Full Name Input */}
           <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">NAME_STRING:</label>
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">YOUR NAME:</label>
             <input
               type="text"
               value={name}
@@ -102,9 +107,9 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Email Identity Input */}
+          {/* Email Address Input */}
           <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">EMAIL_TARGET_VECTOR:</label>
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">EMAIL ADDRESS:</label>
             <input
               type="text"
               value={email}
@@ -122,9 +127,9 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Master Passphrase Input */}
+          {/* Password Input */}
           <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">PASSPHRASE_KEY_ROOT:</label>
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">CHOOSE PASSWORD:</label>
             <div className="relative">
               <input
                 type={showPass ? "text" : "password"}
@@ -151,9 +156,9 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Passphrase Verification Input */}
+          {/* Confirm Password Input */}
           <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">VERIFY_PASSPHRASE_ARRAY:</label>
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">CONFIRM PASSWORD:</label>
             <input
               type="password"
               value={confirmPassword}
@@ -171,20 +176,20 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Action Button */}
           <button
             type="submit"
             className="w-full py-2.5 bg-[#8A1A1A] hover:bg-red-700 text-[#E9D4C3] font-mono text-xs uppercase tracking-wider transition-colors rounded font-bold mt-2 cursor-pointer"
           >
-            COMPILE_REGISTRATION_PAYLOAD
+            REGISTER ACCOUNT
           </button>
         </form>
 
-        {/* Login redirect link */}
+        {/* Form Footer Link */}
         <div className="mt-5 text-center font-mono text-[10px] text-[#7C8FA9]">
-          ALREADY_REGISTERED?{" "}
+          ALREADY HAVE AN ACCOUNT?{" "}
           <Link href="/login" className="text-[#E9D4C3] underline hover:text-white transition-colors">
-            EXECUTE_SIGN_IN
+            SIGN IN HERE
           </Link>
         </div>
 

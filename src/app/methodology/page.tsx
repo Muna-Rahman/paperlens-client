@@ -1,97 +1,177 @@
 "use client";
 
-import { Activity, BookOpen, Layers, GitCommit } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { ShieldCheck, Eye, EyeOff, Terminal, AlertTriangle } from "lucide-react";
 
-export default function MethodologyPage() {
+export default function LoginPage() {
+  const { loginDemo } = useAuth();
+  const router = useRouter();
+
+  // Controlled input form states
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Dynamic input validation error flags
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [systemAlert, setSystemAlert] = useState<string | null>(null);
+
+  // Double check form parameters before attempting backend network dispatch loops
+  const validateForm = () => {
+    const activeErrors: { email?: string; password?: string } = {};
+    
+    if (!email) {
+      activeErrors.email = "Please enter your email address to log in.";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      activeErrors.email = "That email format does not look right. Please double check.";
+    }
+
+    if (!password) {
+      activeErrors.password = "Please enter your password.";
+    } else if (password.length < 6) {
+      activeErrors.password = "Your password must be at least 6 characters long.";
+    }
+
+    setErrors(activeErrors);
+    return Object.keys(activeErrors).length === 0;
+  };
+
+  const handleStandardSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSystemAlert(null);
+
+    if (validateForm()) {
+      // Temporary status message displaying until standard server api endpoints are connected
+      setSystemAlert("Form values verified! Standard secure authentication will be available once the backend API is connected.");
+    }
+  };
+
+  // Instantly populates mock profiles and redirects the user home
+  const handleDemoBypass = (role: "user" | "admin") => {
+    loginDemo(role);
+    router.push("/");
+  };
+
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 pb-32 space-y-12">
+    <div className="max-w-md mx-auto py-16 px-4 flex flex-col items-center justify-center min-h-[70vh]">
       
-      {/* Title Header */}
-      <div>
-        <span className="font-mono text-[10px] text-[#7C8FA9] tracking-widest block mb-1">// QUANT_ALGORITHMIC_BREAKDOWN</span>
-        <h1 className="font-display text-3xl font-bold text-white tracking-tight">Mathematical Architecture</h1>
-      </div>
-
-      {/* Main plain language concept profiles */}
-      <div className="space-y-6">
+      {/* 🧊 Glass-themed Sign-In Panel */}
+      <div className="w-full glass-card p-8 rounded-lg border border-[#E9D4C3]/10 relative overflow-hidden shadow-2xl">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A1A1A] via-[#7C8FA9] to-transparent" />
         
-        {/* TF-IDF Component */}
-        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-          <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2 flex items-center space-x-2">
-            <BookOpen className="w-4 h-4 text-[#8A1A1A]" />
-            <span>1. TF-IDF // Term Frequency - Inverse Document Frequency</span>
-          </h3>
-          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
-            Instead of just counting words, TF-IDF evaluates how unique a specific term is across the entire network database. If a term appears frequently inside one single abstract page but is exceptionally rare across the rest of the ecosystem, the engine assigns it a massive mathematical weight factor. Standard bridge words (like "the" or "and") are heavily filtered out automatically.
-          </p>
+        {/* Decorative Panel Header Header */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="w-12 h-12 rounded-full border border-[#8A1A1A]/30 bg-[#8A1A1A]/5 flex items-center justify-center mb-3">
+            <ShieldCheck className="w-6 h-6 text-[#8A1A1A] shadow-glow-red" />
+          </div>
+          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// SECURE GATEWAY</span>
+          <h1 className="font-display text-2xl font-bold text-white tracking-tight mt-1">SIGN IN</h1>
         </div>
 
-        {/* Cosine Similarity Component */}
-        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-          <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2 flex items-center space-x-2">
-            <Layers className="w-4 h-4 text-[#8A1A1A]" />
-            <span>2. Cosine Similarity // Directional Orientation Metrics</span>
-          </h3>
-          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
-            Once texts convert into arrays of TF-IDF numerical scores, each document is conceptualized as an arrow pointing out into a massive multi-dimensional geometric chart area. The console calculates the actual angle spacing between those arrows. If two documents point along the same geometric coordinate path, they receive a high contextual match percentage, independent of their absolute lengths.
-          </p>
+        {/* Dynamic Status Alert Banner */}
+        {systemAlert && (
+          <div className="mb-6 p-3 bg-red-950/20 border border-red-900/40 rounded flex items-start space-x-2 font-mono text-[10px] text-red-400">
+            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>{systemAlert}</span>
+          </div>
+        )}
+
+        {/* Primary Input Form */}
+        <form onSubmit={handleStandardSubmit} className="space-y-5">
+          
+          {/* Email input field layout */}
+          <div className="space-y-1">
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
+              EMAIL ADDRESS:
+            </label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors({ ...errors, email: undefined });
+              }}
+              placeholder="operator@paperlens.dat"
+              className={`w-full bg-[#0A1626] border rounded px-3 py-2 text-xs font-mono text-white focus:outline-none transition-colors ${
+                errors.email ? "border-red-600 focus:border-red-500" : "border-[#E9D4C3]/15 focus:border-[#8A1A1A]"
+              }`}
+            />
+            {errors.email && (
+              <span className="font-mono text-[9px] text-red-400 block mt-1 animate-pulse">
+                &gt; {errors.email}
+              </span>
+            )}
+          </div>
+
+          {/* Password input field layout */}
+          <div className="space-y-1">
+            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
+              PASSWORD:
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors({ ...errors, password: undefined });
+                }}
+                placeholder="••••••••••••"
+                className={`w-full bg-[#0A1626] border rounded pl-3 pr-10 py-2 text-xs font-mono text-white focus:outline-none transition-colors ${
+                  errors.password ? "border-red-600 focus:border-red-500" : "border-[#E9D4C3]/15 focus:border-[#8A1A1A]"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 text-[#7C8FA9] hover:text-[#E9D4C3] transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {errors.password && (
+              <span className="font-mono text-[9px] text-red-400 block mt-1 animate-pulse">
+                &gt; {errors.password}
+              </span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2.5 bg-[#8A1A1A]/20 hover:bg-[#8A1A1A]/40 border border-[#8A1A1A]/50 text-[#E9D4C3] font-mono text-xs uppercase tracking-wider transition-all rounded font-bold mt-2"
+          >
+            EXECUTE SIGN IN
+          </button>
+        </form>
+
+        {/* Visual Bypass Splitter Divider */}
+        <div className="relative my-6 flex items-center justify-center">
+          <div className="absolute w-full h-[1px] bg-[#E9D4C3]/5" />
+          <span className="relative z-10 px-3 bg-[#0A1626] font-mono text-[9px] text-[#7C8FA9]">OR // DOCK BYPASS</span>
         </div>
 
-        {/* Core Processing Pipeline Loop */}
-        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-          <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2 flex items-center space-x-2">
-            <Activity className="w-4 h-4 text-[#8A1A1A]" />
-            <span>3. The Document Alignment Sequence</span>
-          </h3>
-          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
-            When you engage a paper profile, the execution matrix strips the abstract text down to unique root arrays, aligns the matrix structures, applies vector weighting variables, and loops cross-references against all other logs inside the repository to instantly yield the top matches.
-          </p>
+        {/* ⚡ Demo Login Trigger Module buttons */}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => handleDemoBypass("user")}
+            className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#E9D4C3]/5 border border-[#E9D4C3]/10 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#E9D4C3]/10 transition-colors"
+          >
+            <Terminal className="w-3.5 h-3.5 text-[#7C8FA9]" />
+            <span>DEMO USER</span>
+          </button>
+          
+          <button
+            onClick={() => handleDemoBypass("admin")}
+            className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#8A1A1A]/10 border border-[#8A1A1A]/30 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#8A1A1A]/30 transition-colors shadow-glow-red/10"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[#8A1A1A]" />
+            <span>DEMO ADMIN</span>
+          </button>
         </div>
 
       </div>
-
-      {/* 🛠️ STEP-BY-STEP WORKED EXAMPLE SECTION */}
-      <section className="glass-card p-6 sm:p-8 rounded-lg border border-[#8A1A1A]/30 bg-gradient-to-b from-[#8A1A1A]/5 to-transparent space-y-4">
-        <div className="flex items-center space-x-2 text-[#E9D4C3] font-mono text-xs uppercase tracking-widest">
-          <GitCommit className="w-4 h-4 text-[#8A1A1A]" />
-          <span>TRACED_RUN_EXAMPLE // DEMO_PLAYLOAD_CALCULATION</span>
-        </div>
-
-        <div className="font-sans text-xs text-[#7C8FA9] space-y-4 leading-relaxed">
-          <p>
-            Let's trace out a clear mathematical processing match sequence using two simple mock abstracts inside our sandbox engine:
-          </p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-[11px] bg-[#0A1626] p-4 rounded border border-[#E9D4C3]/5">
-            <div className="space-y-1">
-              <span className="text-white block font-bold">// ABSTRACT_NODE_ALPHA</span>
-              <p className="italic text-[#7C8FA9]">"Analyzing student dropout algorithms and performance data structures."</p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-white block font-bold">// ABSTRACT_NODE_BETA</span>
-              <p className="italic text-[#7C8FA9]">"Predicting student attrition variables with custom data arrays."</p>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <p className="flex items-start">
-              <strong className="text-white font-medium mr-1">Step A (Token Extraction Matrix):</strong> 
-              The tokenizer isolates highly unique root identifier keys, noting that terms like <span className="text-white font-mono bg-gray-900 px-1 rounded">"student"</span> and <span className="text-white font-mono bg-gray-900 px-1 rounded">"data"</span> map actively across both blocks, while <span className="text-white font-mono bg-gray-900 px-1 rounded">"dropout"</span> and <span className="text-white font-mono bg-gray-900 px-1 rounded">"attrition"</span> serve as close semantic fields.
-            </p>
-            <p className="flex items-start">
-              <strong className="text-white font-medium mr-1">Step B (TF-IDF Weight Alignment):</strong> 
-              Rare mathematical keys (like <span className="text-white font-mono bg-gray-900 px-1 rounded">"algorithms"</span>) get elevated score attributes, while common overlapping words are downweighted, converting the text strings cleanly into spatial coordinates.
-            </p>
-            <p className="flex items-start">
-              <strong className="text-white font-medium mr-1">Step C (Cosine Geometric Summation):</strong> 
-              The system computes the dot product of the coordinate structures, yielding a final inner space orientation alignment rating of <span className="text-[#E9D4C3] font-mono font-bold bg-[#8A1A1A]/30 px-1.5 py-0.5 rounded">0.866</span>. 
-            </p>
-            <p className="font-mono text-[11px] text-[#E9D4C3] pt-2 border-t border-[#E9D4C3]/5">
-              &gt;&gt; LOG_RESULT: Semantic Telemetry Scan yields a definitive matching factor of 87%.
-            </p>
-          </div>
-        </div>
-      </section>
 
     </div>
   );

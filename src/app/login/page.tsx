@@ -9,29 +9,29 @@ export default function LoginPage() {
   const { loginDemo } = useAuth();
   const router = useRouter();
 
-  // Field Form States
+  // Controlled input form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Validation Inline Error States
+  // Dynamic input validation error flags
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [systemAlert, setSystemAlert] = useState<string | null>(null);
 
-  // Run initial inline check protocols before submitting payloads
+  // Double check form parameters before attempting backend network dispatch loops
   const validateForm = () => {
     const activeErrors: { email?: string; password?: string } = {};
     
     if (!email) {
-      activeErrors.email = "CRITICAL: Email sequence target cannot be left void.";
+      activeErrors.email = "Please enter your email address to log in.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      activeErrors.email = "MALFORMED_STRING: Input syntax must conform to standard email formatting.";
+      activeErrors.email = "That email format does not look right. Please double check.";
     }
 
     if (!password) {
-      activeErrors.password = "CRITICAL: Security passphrase field required for matrix authentication.";
+      activeErrors.password = "Please enter your password.";
     } else if (password.length < 6) {
-      activeErrors.password = "BIT_LENGTH_MINIMUM: Passphrase density must exceed 6 metric symbols.";
+      activeErrors.password = "Your password must be at least 6 characters long.";
     }
 
     setErrors(activeErrors);
@@ -43,12 +43,12 @@ export default function LoginPage() {
     setSystemAlert(null);
 
     if (validateForm()) {
-      // Standard credentials simulation before backend api initialization
-      setSystemAlert("SYS_STATUS: Standard secure authentication requires backend database connection hooks.");
+      // Temporary status message displaying until standard server api endpoints are connected
+      setSystemAlert("Form values verified! Standard secure authentication will be available once the backend API is connected.");
     }
   };
 
-  // Triggers immediate profile synchronization and routes operator home
+  // Instantly populates mock profiles and redirects the user home
   const handleDemoBypass = (role: "user" | "admin") => {
     loginDemo(role);
     router.push("/");
@@ -57,20 +57,20 @@ export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto py-16 px-4 flex flex-col items-center justify-center min-h-[70vh]">
       
-      {/* 🧊 Glass Authentication Frame */}
+      {/* 🧊 Glass-themed Sign-In Panel */}
       <div className="w-full glass-card p-8 rounded-lg border border-[#E9D4C3]/10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A1A1A] via-[#7C8FA9] to-transparent" />
         
-        {/* Terminal Core Icon */}
+        {/* Decorative Panel Header Header */}
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-12 h-12 rounded-full border border-[#8A1A1A]/30 bg-[#8A1A1A]/5 flex items-center justify-center mb-3">
             <ShieldCheck className="w-6 h-6 text-[#8A1A1A] shadow-glow-red" />
           </div>
-          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// ACCESS_GATE_GATEWAY</span>
-          <h1 className="font-display text-2xl font-bold text-white tracking-tight mt-1">SYS_AUTHENTICATION</h1>
+          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// SECURE GATEWAY</span>
+          <h1 className="font-display text-2xl font-bold text-white tracking-tight mt-1">SIGN IN</h1>
         </div>
 
-        {/* Global System Warning Banner */}
+        {/* Dynamic Status Alert Banner */}
         {systemAlert && (
           <div className="mb-6 p-3 bg-red-950/20 border border-red-900/40 rounded flex items-start space-x-2 font-mono text-[10px] text-red-400">
             <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -78,13 +78,13 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Primary Credential Form */}
+        {/* Primary Input Form */}
         <form onSubmit={handleStandardSubmit} className="space-y-5">
           
-          {/* Email Processing Entry */}
+          {/* Email input field layout */}
           <div className="space-y-1">
             <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
-              OPERATOR_EMAIL_PAYLOAD:
+              EMAIL ADDRESS:
             </label>
             <input
               type="text"
@@ -105,10 +105,10 @@ export default function LoginPage() {
             )}
           </div>
 
-          {/* Password Processing Entry */}
+          {/* Password input field layout */}
           <div className="space-y-1">
             <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
-              SECURITY_PASSPHRASE_KEY:
+              PASSWORD:
             </label>
             <div className="relative">
               <input
@@ -138,29 +138,28 @@ export default function LoginPage() {
             )}
           </div>
 
-          {/* Standard Form Submission Action */}
           <button
             type="submit"
             className="w-full py-2.5 bg-[#8A1A1A]/20 hover:bg-[#8A1A1A]/40 border border-[#8A1A1A]/50 text-[#E9D4C3] font-mono text-xs uppercase tracking-wider transition-all rounded font-bold mt-2"
           >
-            EXECUTE_SECURE_SIGN_IN
+            EXECUTE SIGN IN
           </button>
         </form>
 
-        {/* Separator Strip */}
+        {/* Visual Bypass Splitter Divider */}
         <div className="relative my-6 flex items-center justify-center">
           <div className="absolute w-full h-[1px] bg-[#E9D4C3]/5" />
-          <span className="relative z-10 px-3 bg-[#0A1626] font-mono text-[9px] text-[#7C8FA9]">OR // BYPASS</span>
+          <span className="relative z-10 px-3 bg-[#0A1626] font-mono text-[9px] text-[#7C8FA9]">OR // DOCK BYPASS</span>
         </div>
 
-        {/* ⚡ Demo Login Trigger Module */}
+        {/* ⚡ Demo Login Trigger Module buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => handleDemoBypass("user")}
             className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#E9D4C3]/5 border border-[#E9D4C3]/10 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#E9D4C3]/10 transition-colors"
           >
             <Terminal className="w-3.5 h-3.5 text-[#7C8FA9]" />
-            <span>DEMO_USER</span>
+            <span>DEMO USER</span>
           </button>
           
           <button
@@ -168,7 +167,7 @@ export default function LoginPage() {
             className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#8A1A1A]/10 border border-[#8A1A1A]/30 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#8A1A1A]/30 transition-colors shadow-glow-red/10"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-[#8A1A1A]" />
-            <span>DEMO_ADMIN</span>
+            <span>DEMO ADMIN</span>
           </button>
         </div>
 
