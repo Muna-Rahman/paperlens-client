@@ -1,150 +1,204 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { PlusCircle, Terminal, ShieldAlert, Cpu } from "lucide-react";
-import Link from "next/link";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import ProtectedRoute from '@/components/layout/ProtectedRoute';
+import api from '@/lib/api';
 
 export default function AddPaperPage() {
-  const { isLoggedIn } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    shortDescription: '',
+    abstract: '',
+    field: 'Artificial Intelligence',
+    year: new Date().getFullYear(),
+    citationCount: 0,
+    keywords: '',
+    image: '',
+  });
 
-  // Form Field Capture Arrays
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [abstract, setAbstract] = useState("");
-  const [field, setField] = useState("NLP");
-  const [year, setYear] = useState("2026");
-  const [citations, setCitations] = useState("0");
-  const [keywords, setKeywords] = useState("");
-  const [coverUrl, setCoverUrl] = useState("");
-
-  const [systemAlert, setSystemAlert] = useState<string | null>(null);
-
-  const handlePublishSequence = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSystemAlert(null);
-
-    // Form schema check logic
-    if (!title || !description || !abstract) {
-      setSystemAlert("CRITICAL_ERR: Missing mandatory validation parameters.");
-      return;
-    }
-
-    setSystemAlert("SYS_STATUS: Log entry successfully tokenized into relational matrix cache.");
-    
-    // Wipe layout states cleanly
-    setTitle("");
-    setDescription("");
-    setAbstract("");
-    setKeywords("");
-    setCoverUrl("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'year' || name === 'citationCount' ? Number(value) : value,
+    }));
   };
 
-  // 🛡️ Security Gate Check
-  if (!isLoggedIn) {
-    return (
-      <div className="max-w-md mx-auto py-24 px-4 text-center">
-        <div className="glass-card p-8 rounded-lg border border-red-900/30 bg-red-950/5">
-          <ShieldAlert className="w-12 h-12 text-[#8A1A1A] mx-auto mb-4 animate-pulse" />
-          <h2 className="font-display text-lg font-bold text-white mb-2">ACCESS_DENIED // UNAUTHORIZED</h2>
-          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed mb-6">
-            This secure data injection array requires active researcher or administrator authorization tokens.
-          </p>
-          <Link href="/login" className="inline-block px-4 py-2 bg-[#8A1A1A] text-[#E9D4C3] font-mono text-xs uppercase rounded font-bold hover:bg-red-700 transition-colors">
-            EXECUTE_SYS_LOGIN
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      // Format keywords string comma separation into clean list array if needed by backend
+      const formattedData = {
+        ...formData,
+        keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean),
+      };
+
+      await api.post('/papers', formattedData);
+      router.push('/papers'); // Redirect back to active user management portfolio
+    } catch (err: any) {
+      setError(err.message || 'Failed to index new research paper.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 pb-24">
-      <div className="mb-8">
-        <span className="font-mono text-[10px] text-[#7C8FA9] tracking-widest block mb-1">// SYSTEM_LOG_INJECTION_DECK</span>
-        <h1 className="font-display text-2xl font-bold text-white tracking-tight">Register Fresh Research Asset</h1>
-      </div>
+    <ProtectedRoute>
+      <main className="min-h-screen w-full bg-[#0A1626] text-[#F5F5F5] font-['General_Sans'] px-6 py-12 relative overflow-hidden">
+        {/* Secondary Decorative Glow Placement */}
+        <div className="absolute top-[-10%] right-[5%] w-[600px] h-[600px] bg-[#7C8FA9]/5 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="glass-card p-6 sm:p-8 rounded-lg border border-[#E9D4C3]/10 relative">
-        {systemAlert && (
-          <div className="mb-6 p-3 bg-[#E9D4C3]/5 border border-[#8A1A1A]/30 rounded flex items-center space-x-2 font-mono text-[10px] text-[#E9D4C3]">
-            <Terminal className="w-4 h-4 text-[#8A1A1A] shrink-0" />
-            <span>{systemAlert}</span>
-          </div>
-        )}
+        <div className="max-w-3xl mx-auto backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-8 shadow-2xl relative z-10">
+          <h1 className="text-3xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide mb-2">
+            Index Research Paper
+          </h1>
+          <p className="text-[#A8B3C4] text-sm mb-8">
+            Submit new entry metadata parameters into the cross-similarity computing engine node.
+          </p>
 
-        <form onSubmit={handlePublishSequence} className="space-y-6 font-mono text-xs text-[#7C8FA9]">
-          
-          {/* Title input */}
-          <div className="flex flex-col gap-1.5">
-            <label className="uppercase tracking-wider text-[#E9D4C3]">Paper Title *</label>
-            <input 
-              type="text" value={title} onChange={(e) => setTitle(e.target.value)} required
-              placeholder="e.g., Adaptive Agricultural Systems for Food Security..."
-              className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none focus:border-[#8A1A1A]"
-            />
-          </div>
-
-          {/* Grid layout for structured meta controls */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex flex-col gap-1.5">
-              <label className="uppercase tracking-wider text-[#E9D4C3]">Research Field</label>
-              <select value={field} onChange={(e) => setField(e.target.value)} className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-[#E9D4C3] focus:outline-none">
-                <option value="NLP">NLP (Natural Language)</option>
-                <option value="XAI">XAI (Explainable AI)</option>
-                <option value="EDM">EDM (Edu Data Mining)</option>
-                <option value="ROB">ROB (Robustness Boundaries)</option>
-                <option value="CLIMATE">AGRI_RESILIENCE</option>
-              </select>
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-[#8A1A1A]/20 border border-[#8A1A1A] text-[#F5F5F5] text-xs font-mono">
+              {error}
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="uppercase tracking-wider text-[#E9D4C3]">Publication Year</label>
-              <input type="number" value={year} onChange={(e) => setYear(e.target.value)} className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="uppercase tracking-wider text-[#E9D4C3]">Initial Citation Count</label>
-              <input type="number" value={citations} onChange={(e) => setCitations(e.target.value)} className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none" />
-            </div>
-          </div>
+          )}
 
-          {/* Short Description */}
-          <div className="flex flex-col gap-1.5">
-            <label className="uppercase tracking-wider text-[#E9D4C3]">Short Description *</label>
-            <input 
-              type="text" value={description} onChange={(e) => setDescription(e.target.value)} required
-              placeholder="Provide a highly humanized summary sentence..."
-              className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none"
-            />
-          </div>
-
-          {/* Full Abstract Area */}
-          <div className="flex flex-col gap-1.5">
-            <label className="uppercase tracking-wider text-[#E9D4C3]">Full Abstract Text Payload *</label>
-            <textarea 
-              rows={5} value={abstract} onChange={(e) => setAbstract(e.target.value)} required
-              placeholder="Paste comprehensive text abstract vectors here..."
-              className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none"
-            />
-          </div>
-
-          {/* Keywords & Optional Cover URL */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-1.5">
-              <label className="uppercase tracking-wider text-[#E9D4C3]">Keywords Index (Comma Separated)</label>
-              <input type="text" value={keywords} onChange={(e) => setKeywords(e.target.value)} placeholder="OULAD, list compressions, dataset engineering" className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none" />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Paper Title</label>
+              <input
+                type="text"
+                name="title"
+                required
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors"
+                placeholder="e.g., Attention Is All You Need"
+              />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="uppercase tracking-wider text-[#E9D4C3]">Optional Cover Image URL</label>
-              <input type="url" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="https://domain.com/vector.svg" className="w-full bg-[#0A1626] border border-[#E9D4C3]/15 rounded px-3 py-2 text-white focus:outline-none" />
-            </div>
-          </div>
 
-          <button type="submit" className="w-full sm:w-auto px-6 py-3 bg-[#8A1A1A] hover:bg-red-700 text-[#E9D4C3] font-mono text-xs uppercase font-bold tracking-wider rounded transition-all cursor-pointer flex items-center justify-center space-x-2">
-            <PlusCircle className="w-4 h-4" />
-            <span>COMPILE_AND_INJECT_LOG</span>
-          </button>
-        </form>
-      </div>
-    </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Short Description</label>
+              <input
+                type="text"
+                name="shortDescription"
+                required
+                value={formData.shortDescription}
+                onChange={handleChange}
+                className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors"
+                placeholder="Brief single-sentence outline summary..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Full Abstract</label>
+              <textarea
+                name="abstract"
+                required
+                rows={5}
+                value={formData.abstract}
+                onChange={handleChange}
+                className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors resize-y text-sm leading-relaxed"
+                placeholder="Paste the complete publication summary abstract body here..."
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Research Field</label>
+                <select
+                  name="field"
+                  value={formData.field}
+                  onChange={handleChange}
+                  className="w-full bg-[#0A1626]/60 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors cursor-pointer text-sm text-[#F5F5F5]"
+                >
+                  <option value="Artificial Intelligence">Artificial Intelligence</option>
+                  <option value="Computer Vision">Computer Vision</option>
+                  <option value="Natural Language Processing">Natural Language Processing</option>
+                  <option value="Data Science">Data Science</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Publication Year</label>
+                <input
+                  type="number"
+                  name="year"
+                  required
+                  value={formData.year}
+                  onChange={handleChange}
+                  className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Citation Count</label>
+                <input
+                  type="number"
+                  name="citationCount"
+                  required
+                  min="0"
+                  value={formData.citationCount}
+                  onChange={handleChange}
+                  className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Keywords (Comma Separated)</label>
+                <input
+                  type="text"
+                  name="keywords"
+                  required
+                  value={formData.keywords}
+                  onChange={handleChange}
+                  className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors text-sm"
+                  placeholder="transformer, self-attention, deep-learning"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Optional Cover Image URL</label>
+                <input
+                  type="url"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleChange}
+                  className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors text-sm"
+                  placeholder="https://example.com/cover.jpg"
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="px-6 py-3 border border-[rgba(233,212,195,0.2)] text-[#A8B3C4] hover:text-[#F5F5F5] rounded-lg transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-3 bg-[#8A1A1A] hover:bg-[#4E0000] text-[#F5F5F5] rounded-lg font-semibold shadow-lg shadow-[#8A1A1A]/20 transition-all duration-300 disabled:opacity-50 text-sm"
+              >
+                {loading ? 'Processing Entry...' : 'Submit Paper'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </ProtectedRoute>
   );
 }

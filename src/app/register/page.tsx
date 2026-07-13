@@ -26,16 +26,17 @@ export default function RegisterPage() {
     setLoading(true);
 
     const { error: authError } = await authClient.signUp.email({
-  email,
-  password,
-  name,
-});
+      email,
+      password,
+      name,
+    });
 
     if (authError) {
       setError(authError.message || 'Registration failed');
       setLoading(false);
     } else {
-      router.push('/explore');
+      // FIXED: Push to /login instead of /explore so they can manually sign in
+      router.push('/login');
       router.refresh();
     }
   };

@@ -1,8 +1,9 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-    // Better Auth appends "/auth" internally to create: http://localhost:5000/api/auth/get-session
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
+    // Explicitly target the full path where your Express server mounts the handler
+    baseURL: "http://localhost:5000/api/auth"
 });
 
+// Cleanly export the hooks from the correct React wrapper
 export const { useSession, signIn, signUp, signOut } = authClient;

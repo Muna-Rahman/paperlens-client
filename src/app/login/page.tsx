@@ -17,26 +17,26 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    const { error: authError } = await authClient.signIn.email({
-      email,
-      password,
-    });
+    // ... inside your handleLogin method logic ...
+const { error: authError } = await authClient.signIn.email({
+  email,
+  password,
+});
 
-    if (authError) {
-      setError(authError.message || 'Invalid credentials');
-      setLoading(false);
-    } else {
-      router.push('/explore');
-      router.refresh();
-    }
+if (authError) {
+  setError(authError.message || 'Invalid credentials');
+  setLoading(false);
+} else {
+  // FIXED: Redirect directly to the premium Explore grid instead of /papers
+  router.push('/explore');
+  router.refresh();
+}
   };
 
   return (
     <main className="min-h-screen w-full flex items-center justify-center bg-[#0A1626] px-4 font-['General_Sans']">
-      {/* Decorative Radial Lighting Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-[#7C8FA9]/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Glass authentication panel */}
       <div className="w-full max-w-md backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-8 shadow-2xl relative z-10">
         <h2 className="text-3xl font-bold font-['Clash_Display'] text-[#E9D4C3] mb-2 tracking-wide text-center">
           Welcome Back
@@ -76,11 +76,10 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Liquid Glass Styled Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 relative overflow-hidden bg-[#8A1A1A] hover:bg-[#4E0000] text-[#F5F5F5] font-semibold py-3 px-4 rounded-lg shadow-lg shadow-[#8A1A1A]/20 transition-all duration-300 disabled:opacity-50 text-sm tracking-wide"
+            className="w-full mt-2 bg-[#8A1A1A] hover:bg-[#4E0000] text-[#F5F5F5] font-semibold py-3 px-4 rounded-lg shadow-lg shadow-[#8A1A1A]/20 transition-all duration-300 disabled:opacity-50 text-sm tracking-wide"
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>

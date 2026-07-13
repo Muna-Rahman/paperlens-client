@@ -20,6 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  // Better Auth handles token lifecycle verification dynamically under the hood here
   const { data: session, isPending } = useSession();
   const router = useRouter();
 
