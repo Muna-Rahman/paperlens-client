@@ -1,0 +1,8 @@
+import { createAuthClient } from "better-auth/react";
+
+export const authClient = createAuthClient({
+    // Better Auth appends "/auth" internally to create: http://localhost:5000/api/auth/get-session
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"
+});
+
+export const { useSession, signIn, signUp, signOut } = authClient;
