@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Eye, EyeOff, Terminal, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Eye, EyeOff, AlertTriangle } from "lucide-react";
 
-export default function LoginPage() {
-  const { loginDemo } = useAuth();
+export default function MethodologyPage() {
   const router = useRouter();
 
   // Controlled input form states
@@ -48,12 +46,6 @@ export default function LoginPage() {
     }
   };
 
-  // Instantly populates mock profiles and redirects the user home
-  const handleDemoBypass = (role: "user" | "admin") => {
-    loginDemo(role);
-    router.push("/");
-  };
-
   return (
     <div className="max-w-md mx-auto py-16 px-4 flex flex-col items-center justify-center min-h-[70vh]">
       
@@ -61,7 +53,7 @@ export default function LoginPage() {
       <div className="w-full glass-card p-8 rounded-lg border border-[#E9D4C3]/10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A1A1A] via-[#7C8FA9] to-transparent" />
         
-        {/* Decorative Panel Header Header */}
+        {/* Decorative Panel Header */}
         <div className="flex flex-col items-center text-center mb-8">
           <div className="w-12 h-12 rounded-full border border-[#8A1A1A]/30 bg-[#8A1A1A]/5 flex items-center justify-center mb-3">
             <ShieldCheck className="w-6 h-6 text-[#8A1A1A] shadow-glow-red" />
@@ -146,33 +138,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Visual Bypass Splitter Divider */}
-        <div className="relative my-6 flex items-center justify-center">
-          <div className="absolute w-full h-[1px] bg-[#E9D4C3]/5" />
-          <span className="relative z-10 px-3 bg-[#0A1626] font-mono text-[9px] text-[#7C8FA9]">OR // DOCK BYPASS</span>
-        </div>
-
-        {/* ⚡ Demo Login Trigger Module buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => handleDemoBypass("user")}
-            className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#E9D4C3]/5 border border-[#E9D4C3]/10 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#E9D4C3]/10 transition-colors"
-          >
-            <Terminal className="w-3.5 h-3.5 text-[#7C8FA9]" />
-            <span>DEMO USER</span>
-          </button>
-          
-          <button
-            onClick={() => handleDemoBypass("admin")}
-            className="flex items-center justify-center space-x-1.5 px-3 py-2 bg-[#8A1A1A]/10 border border-[#8A1A1A]/30 text-[#E9D4C3] font-mono text-[10px] uppercase rounded hover:bg-[#8A1A1A]/30 transition-colors shadow-glow-red/10"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#8A1A1A]" />
-            <span>DEMO ADMIN</span>
-          </button>
-        </div>
-
       </div>
-
     </div>
   );
 }
