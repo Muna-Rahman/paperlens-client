@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+// Import your custom Axios client layout instance instead of authClient
+import api from '@/lib/api'; 
+import { useAuth } from '@/context/AuthContext'; // If you have a context to toggle global state
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,20 +19,25 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    // ... inside your handleLogin method logic ...
-const { error: authError } = await authClient.signIn.email({
-  email,
-  password,
-});
+    try {
+      // FIXED: Routed directly to your actual Express backend controller path layout
+      const res = await api.post('/auth/login', {
+        email,
+        password,
+      });
 
-if (authError) {
-  setError(authError.message || 'Invalid credentials');
-  setLoading(false);
-} else {
-  // FIXED: Redirect directly to the premium Explore grid instead of /papers
-  router.push('/explore');
-  router.refresh();
-}
+      if (res.data.success) {
+        // Redirect directly to the premium Explore grid instead of /papers
+        router.push('/explore');
+        router.refresh();
+      } else {
+        setError(res.data.message || 'Invalid credentials matrix match.');
+        setLoading(false);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Authentication sequence failed.');
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,17 +1,15 @@
 import axios from 'axios';
 
-// Ensure the URL matches your local or deployed backend port/domain
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
 const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true, // Crucial for receiving and sending httpOnly JWT cookies
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  // FIXED: Tells Axios to automatically forward HTTP-Only cookies/sessions across origins
+  withCredentials: true, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Response interceptor to format error messages consistently
+// Response interceptor for clear global error formatting
 api.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -1,228 +1,302 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import Hero from "@/components/layout/Hero";
+import { ArrowUpRight, Search, Activity, ShieldCheck, Database, HelpCircle, Layers, Mail } from "lucide-react";
 import StatsDashboard from "@/components/charts/StatsDashboard";
-import { Search, Sliders, Cpu, ArrowUpRight, BookOpen, CheckCircle, HelpCircle, Mail, ChevronRight } from "lucide-react";
 
-export default function Home() {
-  // Toggle individual FAQ items
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+export default function HomePage() {
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-  const fields = [
-    { code: "NLP", title: "Natural Language Processing", desc: "Teaching computers to actually read, understand, and break down complex language patterns in research papers." },
-    { code: "XAI", title: "Explainable AI & Fairness", desc: "Looking inside complicated AI models to make sure they are making decisions fairly and without hidden biases." },
-    { code: "EDM", title: "Educational Data Mining", desc: "Studying how students learn online, using real platform data to spot who might need extra help before they fall behind." },
-    { code: "ROB", title: "Robustness & Security", desc: "Testing systems against unexpected errors or tricky inputs to make sure they stay reliable under pressure." }
-  ];
-
-  const trendingPapers = [
-    { title: "Checking Fairness Models in Multi-Layered Student Academic Profiles", field: "XAI", year: 2025, cites: 142 },
-    { title: "Using Smart Feature Mapping to Spot When Online Learners Drop Out Early", field: "EDM", year: 2026, cites: 89 },
-    { title: "Finding the Breaking Point of Modern Text Scanning Tools Under Tricky Inputs", field: "ROB", year: 2025, cites: 64 },
-    { title: "How Language Translation Models Group Words Geometrically in Multi-Dimensional Spaces", field: "NLP", year: 2026, cites: 31 }
-  ];
-
-  const faqs = [
-    { 
-      q: "How does the paper matching engine actually work?", 
-      a: "First, we clean up the paper's text by pulling out regular words that don't add much meaning (like 'the' or 'is'). Then, we use a method called TF-IDF to find the most important keywords that make that paper unique. Finally, we look at the mathematical angle between these keyword sets—using Cosine Similarity—to tell you exactly how close the two papers match in topics." 
-    },
-    { 
-      q: "Can I upload my own research papers to the database?", 
-      a: "Absolutely. Once you log into your demo account, you will get access to a straightforward submission form. From there, you can type in your paper's title, field, abstract, and keywords to instantly add it to the system's search pool." 
-    },
-    { 
-      q: "Is the project completely open source?", 
-      a: "Yes, it is! PaperLens is split into two cleanly separated, open code repositories. One handles everything you see on the screen (the frontend), and the other takes care of the math and background processing (the backend)." 
-    }
+  // FAQ matrix from documentation parameters
+  const faqData = [
+    { q: "How does the matching engine calculate vector similarity?", a: "The application parses text sequences using a dynamic TF-IDF tokenization matrix, measuring vector paths against other stored datasets through a stable Cosine Similarity framework." },
+    { q: "Can public guests submit peer appraisal reviews?", a: "No. Guests can read historical appraisal metrics only. A valid authenticated user session is required to initialize and post new reviews." },
+    { q: "What research fields are cataloged within the matrix?", a: "The repository officially scales across Artificial Intelligence, NLP, Computer Vision, Data Science, Bioinformatics, Cybersecurity, Quantum Computing, and HCI." },
   ];
 
   return (
-    <div className="w-full bg-[#0A1626] text-[#F5EFEB] selection:bg-[#8A1A1A]">
+    <main className="min-h-screen bg-[#0A1626] text-[#F5F5F5] font-['General_Sans'] relative overflow-hidden">
       
-      {/* 1. HERO SECTION */}
-      <Hero />
+      {/* --- BACKGROUND AMBIENT GLOWS --- */}
+      <div className="absolute top-[-5%] right-[-10%] w-[600px] h-[600px] bg-[#7C8FA9]/4 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[25%] left-[-15%] w-[500px] h-[500px] bg-[#8A1A1A]/3 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-[#7C8FA9]/3 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 space-y-32 py-24">
-
-        {/* 2. PLATFORM FEATURES */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-            <Search className="w-6 h-6 text-[#8A1A1A] mb-4 shadow-sm" />
-            <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2">// 01 // TEXT SEARCH</h3>
-            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">Type in a quick keyword to scan titles, headers, and summaries across the entire collection instantly.</p>
-          </div>
-          <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-            <Sliders className="w-6 h-6 text-[#8A1A1A] mb-4" />
-            <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2">// 02 // DYNAMIC FILTERS</h3>
-            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">Narrow down your scope by selecting specific research topics, years, or citation milestones.</p>
-          </div>
-          <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10">
-            <Cpu className="w-6 h-6 text-[#8A1A1A] mb-4" />
-            <h3 className="font-display text-base font-bold text-[#E9D4C3] mb-2">// 03 // SIMILARITY RADAR</h3>
-            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">Go beyond simple word matching. Our engine reads text meaning to find deeply connected papers.</p>
-          </div>
-        </section>
-
-
-        {/* 3. SIMILARITY ENGINE OVERVIEW */}
-        <section className="glass-card p-8 rounded-lg border border-[#E9D4C3]/10 bg-gradient-to-r from-[#E9D4C3]/5 to-transparent">
-          <div className="max-w-3xl">
-            <span className="font-mono text-[10px] text-[#8A1A1A] uppercase tracking-widest block mb-2">// HOW IT WORKS</span>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#E9D4C3] mb-6 tracking-tight">The Three Simple Steps to Finding Matches</h2>
-            
-            <div className="space-y-6 font-sans text-sm text-[#7C8FA9]">
-              <div className="flex items-start space-x-4">
-                <span className="font-mono text-xs text-[#E9D4C3] bg-[#0A1626] border border-[#E9D4C3]/20 px-2 py-0.5 rounded">STEP 1</span>
-                <p><strong className="text-white font-medium">Breaking Down the Text:</strong> When you upload a paper, the system reads through the summary text and strips away unhelpful filler words so only meaningful concepts remain.</p>
-              </div>
-              <div className="flex items-start space-x-4">
-                <span className="font-mono text-xs text-[#E9D4C3] bg-[#0A1626] border border-[#E9D4C3]/20 px-2 py-0.5 rounded">STEP 2</span>
-                <p><strong className="text-white font-medium">Finding Important Keywords:</strong> The engine scores each word based on how unique it is. Rare, specific terms get a high priority, while words used everywhere get tuned down.</p>
-              </div>
-              <div className="flex items-start space-x-4">
-                <span className="font-mono text-xs text-[#E9D4C3] bg-[#0A1626] border border-[#E9D4C3]/20 px-2 py-0.5 rounded">STEP 3</span>
-                <p><strong className="text-white font-medium">Calculating the Match:</strong> By overlaying word scores on a geometric grid, the engine measures the angle between different papers to find an exact contextual similarity score.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        {/* 4. RESEARCH FIELDS COVERED */}
-        <section>
-          <div className="mb-8">
-            <span className="font-mono text-[10px] text-[#7C8FA9] uppercase block mb-1">// RESEARCH DECK</span>
-            <h2 className="font-display text-2xl font-bold text-white tracking-tight">Topics We Track</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {fields.map((f) => (
-              <div key={f.code} className="glass-card p-5 rounded-lg border border-[#E9D4C3]/5 hover:border-[#8A1A1A]/50 transition-colors">
-                <div className="font-mono text-xs text-[#8A1A1A] mb-3">#_{f.code}</div>
-                <h4 className="font-display text-sm font-bold text-[#E9D4C3] mb-2">{f.title}</h4>
-                <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-
-        {/* 5. TRENDING PAPERS */}
-        <section>
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <span className="font-mono text-[10px] text-[#7C8FA9] uppercase block mb-1">// DENSITY INDICATOR</span>
-              <h2 className="font-display text-2xl font-bold text-white tracking-tight">Highly Cited Papers</h2>
-            </div>
-            <Link href="/papers" className="font-mono text-xs text-[#E9D4C3] flex items-center hover:underline">
-              BROWSE_ALL <ChevronRight className="w-3 h-3 ml-0.5" />
+      {/* ==========================================
+          1. HERO SECTION (60-70vh layout capacity)
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-16 min-h-[65vh] flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10">
+        <div className="flex-1 space-y-6 text-center lg:text-left">
+          <span className="inline-block font-mono text-xs uppercase tracking-[0.25em] text-[#8A1A1A] bg-[#8A1A1A]/5 px-3 py-1 rounded border border-[#8A1A1A]/20">
+            // LIVE_DOCUMENT_MATRIX_ROUTING
+          </span>
+          <h1 className="text-4xl md:text-6xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-tight leading-tight">
+            Deconstruct Research Vectors through <span className="text-[#8A1A1A]">PaperLens</span>
+          </h1>
+          <p className="text-sm md:text-base text-[#A8B3C4] max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            Analyze document intersections, cross-reference high-dimensional semantic spaces, and explore research trajectories using an isolated Cosine Similarity framework.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <Link
+              href="/explore"
+              className="group flex items-center justify-center gap-2 px-6 py-3 bg-[#8A1A1A] hover:bg-[#4E0000] text-white font-semibold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-[#8A1A1A]/20 border border-[#8A1A1A] transition-all duration-300"
+            >
+              Explore Catalog Matrix
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
+            <Link
+              href="/methodology"
+              className="flex items-center justify-center px-6 py-3 border border-[rgba(233,212,195,0.15)] hover:border-[#E9D4C3] text-[#E9D4C3] font-semibold text-xs uppercase tracking-wider rounded-lg backdrop-blur-[16px] bg-[rgba(233,212,195,0.03)] transition-colors"
+            >
+              Our Vector Methodology
             </Link>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {trendingPapers.map((paper, idx) => (
-              <div key={idx} className="glass-card p-5 rounded-lg border border-[#E9D4C3]/10 flex flex-col justify-between min-h-[180px]">
-                <div>
-                  <div className="flex justify-between text-[10px] font-mono text-[#7C8FA9] mb-2">
-                    <span>// {paper.field}</span>
-                    <span>{paper.year}</span>
-                  </div>
-                  <h4 className="font-display text-xs font-bold text-[#E9D4C3] line-clamp-3 leading-snug">{paper.title}</h4>
-                </div>
-                <div className="mt-4 pt-3 border-t border-[#E9D4C3]/5 flex items-center justify-between font-mono text-[10px] text-[#7C8FA9]">
-                  <span>CITATIONS: <span className="text-white">{paper.cites}</span></span>
-                  <Link href={`/papers/${idx}`} className="text-[#8A1A1A] flex items-center font-bold">
-                    VIEW <ArrowUpRight className="w-2.5 h-2.5 ml-0.5" />
-                  </Link>
-                </div>
+        </div>
+
+        {/* Floating Glass Display Showcase Node */}
+        <div className="flex-1 w-full max-w-md relative flex items-center justify-center p-8 group">
+          {/* Animated Radar Illustration Circle Overlay */}
+          <div className="absolute w-72 h-72 border border-[#8A1A1A]/20 rounded-full animate-pulse flex items-center justify-center">
+            <div className="w-48 h-48 border border-[#8A1A1A]/40 rounded-full animate-[ping_3s_linear_infinite]" />
+          </div>
+
+          {/* Sample Glass Research Card */}
+          <div className="w-full backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-6 relative shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
+            <div className="flex justify-between items-start mb-4">
+              <span className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider">// CORE_SAMPLE.node</span>
+              <div className="w-8 h-8 rounded-full border border-[#8A1A1A] bg-[#0A1626] flex items-center justify-center text-[10px] font-mono font-bold text-[#E9D4C3]">
+                94%
               </div>
-            ))}
-          </div>
-        </section>
-
-
-        {/* 6. STATISTICS DASHBOARD */}
-        <section className="w-full">
-          <div className="mb-8">
-            <span className="font-mono text-[10px] text-[#7C8FA9] uppercase block mb-1">// QUANT VISUALIZER</span>
-            <h2 className="font-display text-2xl font-bold text-white tracking-tight">Current Repository Overview</h2>
-          </div>
-          <StatsDashboard />
-        </section>
-
-
-        {/* 7. TESTIMONIALS */}
-        <section>
-          <div className="mb-8">
-            <span className="font-mono text-[10px] text-[#7C8FA9] uppercase block mb-1">// RESEARCH FEEDBACK</span>
-            <h2 className="font-display text-2xl font-bold text-white tracking-tight">What Researchers Say</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-6 rounded-lg font-sans text-xs text-[#7C8FA9] border border-[#E9D4C3]/5">
-              <p className="italic leading-relaxed mb-4">"The mathematical angle matching tool accurately pointed out three matching student attrition logs that standard keyword search systems completely skipped."</p>
-              <div className="font-mono text-[10px] text-[#E9D4C3]">— DR. A. VANCE // ML ARCHITECT</div>
             </div>
-            <div className="glass-card p-6 rounded-lg font-sans text-xs text-[#7C8FA9] border border-[#E9D4C3]/5">
-              <p className="italic leading-relaxed mb-4">"Being able to see the exact steps behind the keyword calculations makes it incredibly easy to trust the match percentages during data validation audits."</p>
-              <div className="font-mono text-[10px] text-[#E9D4C3]">— T. ELDRIDGE // METRIC ASSURANCE PROFILED</div>
-            </div>
-            <div className="glass-card p-6 rounded-lg font-sans text-xs text-[#7C8FA9] border border-[#E9D4C3]/5">
-              <p className="italic leading-relaxed mb-4">"Searching by concept similarity instead of rigid title phrases completely changes how fast we find relevant reference documents."</p>
-              <div className="font-mono text-[10px] text-[#E9D4C3]">— LEA CHEN // NLP ANALYST CONTROLLER</div>
+            <h4 className="font-['Clash_Display'] text-sm font-bold text-[#E9D4C3] mb-2">Attention Is All You Need</h4>
+            <p className="text-xs text-[#A8B3C4] line-clamp-3 leading-relaxed">
+              We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence completely.
+            </p>
+            <div className="mt-4 pt-3 border-t border-[rgba(233,212,195,0.08)] flex justify-between font-mono text-[9px] text-[#7C8FA9]">
+              <span>CITES: 125.4k</span>
+              <span>FIELD: NLP</span>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
+      {/* ==========================================
+          2. PLATFORM FEATURES
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="mb-12 text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Platform Capabilities</h2>
+          <p className="text-xs font-mono text-[#7C8FA9] mt-2">// SYSTEM_OPERATIONAL_INFRASTRUCTURE</p>
+        </div>
 
-        {/* 8. NEWSLETTER */}
-        <section className="glass-card p-8 rounded-lg border border-[#8A1A1A]/20 text-center max-w-2xl mx-auto relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-[#8A1A1A]" />
-          <Mail className="w-6 h-6 text-[#8A1A1A] mx-auto mb-4" />
-          <h3 className="font-display text-lg font-bold text-[#E9D4C3] mb-2">Stay Updated on New Research Logs</h3>
-          <p className="font-sans text-xs text-[#7C8FA9] max-w-sm mx-auto mb-6">Get brief updates whenever new algorithms, papers, or keyword trends are added to the library.</p>
-          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email address..." 
-              className="flex-grow bg-[#0A1626] border border-[#E9D4C3]/20 px-4 py-2 text-xs font-mono rounded text-[#F5EFEB] focus:outline-none focus:border-[#8A1A1A]"
-              required
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] hover:border-[#8A1A1A]/40 rounded-xl p-6 transition-all duration-300">
+            <Search className="w-6 h-6 text-[#8A1A1A] mb-4" />
+            <h3 className="text-base font-bold text-[#E9D4C3] mb-2">Instant Elastic Indexing</h3>
+            <p className="text-xs text-[#A8B3C4] leading-relaxed">Query across thousands of documentation registers smoothly using live character query processing arrays.</p>
+          </div>
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] hover:border-[#8A1A1A]/40 rounded-xl p-6 transition-all duration-300">
+            <Activity className="w-6 h-6 text-[#7C8FA9] mb-4" />
+            <h3 className="text-base font-bold text-[#E9D4C3] mb-2">Similarity Stamps</h3>
+            <p className="text-xs text-[#A8B3C4] leading-relaxed">Inspect immediate similarity computations utilizing real-time custom radar indicator assets seamlessly.</p>
+          </div>
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] hover:border-[#8A1A1A]/40 rounded-xl p-6 transition-all duration-300">
+            <ShieldCheck className="w-6 h-6 text-[#E9D4C3] mb-4" />
+            <h3 className="text-base font-bold text-[#E9D4C3] mb-2">Secure Peer Appraisals</h3>
+            <p className="text-xs text-[#A8B3C4] leading-relaxed">Protected review systems allow authenticated users to post analytical evaluation parameters securely.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================
+          3. SIMILARITY ENGINE OVERVIEW
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-8 flex flex-col lg:flex-row gap-8 items-center">
+          <div className="flex-1 space-y-4">
+            <h2 className="text-2xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">The Similarity Engine</h2>
+            <p className="text-xs font-mono text-[#8A1A1A]">// COMPUTE_SERVICE_SPECIFICATIONS</p>
+            <p className="text-sm text-[#A8B3C4] leading-relaxed">
+              PaperLens processes text through token parsing strings, extracting terms across abstracts, titles, and unique keywords. The resulting weight configuration maps into multidimensional matrices using a strict dynamic fallback method:
+            </p>
+            <blockquote className="border-l-2 border-[#8A1A1A] pl-4 py-1 font-mono text-xs text-[#F5F5F5] bg-[#0A1626]/40">
+              Cosine Similarity Score = (VectorA · VectorB) / (||VectorA|| * ||VectorB||)
+            </blockquote>
+          </div>
+          <div className="flex-1 w-full bg-[#0A1626]/80 p-6 rounded-xl border border-[rgba(233,212,195,0.08)] font-mono text-xs text-[#7C8FA9] space-y-2">
+            <div className="text-[#E9D4C3] font-bold">// EXECUTION_LOG_SAMPLE:</div>
+            <div>[STEP 1] Fetching active dataset pool matrix...</div>
+            <div>[STEP 2] Initializing tokenization mappings for corpus...</div>
+            <div>[STEP 3] Evaluating string distributions against target node...</div>
+            <div className="text-[#8A1A1A] font-bold">[SUCCESS] Top 4 vector neighbors extracted in 42ms.</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================
+          4. RESEARCH FIELDS COVERED
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="mb-10 border-l-2 border-[#8A1A1A] pl-4">
+          <h2 className="text-2xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Research Fields Covered</h2>
+          <p className="text-xs font-mono text-[#7C8FA9] mt-1">Operational categorical domain indexes.</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          {["Artificial Intelligence", "Natural Language Processing", "Computer Vision", "Data Science", "Bioinformatics", "Cybersecurity", "Quantum Computing", "Human-Computer Interaction"].map((f, i) => (
+            <div key={i} className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] p-4 rounded-lg font-mono text-xs text-[#F5F5F5]">
+              {f}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ==========================================
+          5. TRENDING PAPERS
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="mb-8 flex justify-between items-end">
+          <div>
+            <h2 className="text-2xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Trending Document Nodes</h2>
+            <p className="text-xs font-mono text-[#7C8FA9] mt-1">// HIGHEST_APPRECIATION_RECORDS</p>
+          </div>
+          <Link href="/explore" className="text-xs font-mono text-[#8A1A1A] hover:underline flex items-center gap-1">
+            VIEW_ALL_NODES <span>→</span>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] p-5 rounded-xl flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#7C8FA9] bg-[#0A1626] px-2 py-0.5 border border-[rgba(233,212,195,0.1)] rounded">CV</span>
+              <h4 className="text-sm font-bold text-[#E9D4C3] mt-2 mb-1">Deep Residual Learning for Image Recognition</h4>
+              <p className="text-xs text-[#A8B3C4] line-clamp-2">ResNet architecture resolving the vanishing gradient challenges over deep layers.</p>
+            </div>
+            <div className="font-mono text-xs font-bold text-[#8A1A1A] bg-[#0A1626] border border-[rgba(233,212,195,0.1)] px-3 py-2 rounded shadow-inner">
+              184.2k+
+            </div>
+          </div>
+
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] p-5 rounded-xl flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-mono uppercase text-[#7C8FA9] bg-[#0A1626] px-2 py-0.5 border border-[rgba(233,212,195,0.1)] rounded">DS</span>
+              <h4 className="text-sm font-bold text-[#E9D4C3] mt-2 mb-1">Adam: A Method for Stochastic Optimization</h4>
+              <p className="text-xs text-[#A8B3C4] line-clamp-2">The dominant adaptive learning rate optimizer driving modern computational calculations.</p>
+            </div>
+            <div className="font-mono text-xs font-bold text-[#8A1A1A] bg-[#0A1626] border border-[rgba(233,212,195,0.1)] px-3 py-2 rounded shadow-inner">
+              162.0k+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================
+          6. STATISTICS DASHBOARD (Mounted Recharts Component)
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="mb-10 text-center md:text-left border-l-2 border-[#8A1A1A] pl-4">
+          <h2 className="text-2xl md:text-3xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">
+            Platform Matrix Metrics
+          </h2>
+          <p className="text-xs font-mono text-[#7C8FA9] mt-1">
+            Real-time metric telemetry mapping dataset trends, distributions, and citations.
+          </p>
+        </div>
+
+        {/* Mounted Dashboard Component */}
+        <StatsDashboard />
+      </section>
+
+      {/* ==========================================
+          7. TESTIMONIALS
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="mb-12 text-center max-w-xl mx-auto">
+          <h2 className="text-2xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Peer Appraisals</h2>
+          <p className="text-xs font-mono text-[#7C8FA9] mt-2">// USER_EXPRESSIONS_CORPUS</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] p-6 rounded-xl space-y-3">
+            <p className="text-xs text-[#A8B3C4] leading-relaxed italic">
+              "The dynamic Cosine similarity calculations make cross-referencing research tracks extremely quick. The clean layout configuration renders metrics flawlessly."
+            </p>
+            <div className="font-mono text-[11px] text-[#E9D4C3]">
+              — Dr. Marcus Brody, <span className="text-[#8A1A1A]">AI Research Lead</span>
+            </div>
+          </div>
+
+          <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] p-6 rounded-xl space-y-3">
+            <p className="text-xs text-[#A8B3C4] leading-relaxed italic">
+              "The custom StatStamp circular radar indicator sweep feels incredibly premium. It makes verifying token tracking balances visually satisfying."
+            </p>
+            <div className="font-mono text-[11px] text-[#E9D4C3]">
+              — Clara Vance, <span className="text-[#8A1A1A]">Data Scientist Analyst</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==========================================
+          8. NEWSLETTER
+         ========================================== */}
+      <section className="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-8 max-w-3xl mx-auto text-center space-y-6">
+          <div className="flex justify-center"><Mail className="w-8 h-8 text-[#8A1A1A]" /></div>
+          <h3 className="text-xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Subscribe to Core Indexes</h3>
+          <p className="text-xs text-[#A8B3C4] max-w-md mx-auto leading-relaxed">
+            Receive automated structural data briefings when new landmark research entries are added to the corpus mapping lines.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="ENTER_EMAIL_ADDRESS.cfg..."
+              className="flex-1 bg-[#0A1626] border border-[rgba(233,212,195,0.15)] focus:border-[#8A1A1A] text-xs font-mono p-2.5 rounded-lg text-white outline-none placeholder-[#718096]"
             />
-            <button type="submit" className="bg-[#8A1A1A] text-[#E9D4C3] font-mono text-xs uppercase px-4 py-2 rounded font-bold hover:bg-red-700 transition-colors">
-              SUBSCRIBE
+            <button
+              onClick={() => alert("System email registration logged.")}
+              className="px-5 py-2.5 bg-[#8A1A1A] hover:bg-[#4E0000] text-white font-mono text-xs uppercase tracking-wider rounded-lg transition-colors"
+            >
+              Subscribe
             </button>
-          </form>
-        </section>
-
-
-        {/* 9. FAQ ACCORDION */}
-        <section className="max-w-3xl mx-auto w-full">
-          <div className="text-center mb-8">
-            <HelpCircle className="w-6 h-6 text-[#7C8FA9] mx-auto mb-2" />
-            <h2 className="font-display text-xl font-bold text-white tracking-tight">Frequently Asked Questions</h2>
           </div>
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div key={index} className="glass-card rounded-lg border border-[#E9D4C3]/10 overflow-hidden">
-                <button
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full text-left p-4 font-display text-sm font-bold text-[#E9D4C3] flex justify-between items-center bg-[#E9D4C3]/5"
-                >
-                  <span>{faq.q}</span>
-                  <span className="font-mono text-xs text-[#8A1A1A]">{openFaq === index ? "[-]" : "[+]"}</span>
-                </button>
-                {openFaq === index && (
-                  <div className="p-4 bg-[#0A1626]/50 font-sans text-xs text-[#7C8FA9] border-t border-[#E9D4C3]/5 leading-relaxed">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+        </div>
+      </section>
 
-      </div>
-    </div>
+      {/* ==========================================
+          9. FAQ SECTION
+         ========================================== */}
+      <section className="max-w-4xl mx-auto px-6 py-16 relative z-10 pb-28">
+        <div className="mb-10 text-center">
+          <h2 className="text-2xl font-bold font-['Clash_Display'] text-[#E9D4C3] tracking-wide">Frequently Asked Queries</h2>
+          <p className="text-xs font-mono text-[#7C8FA9] mt-2">// RESOLVING_INDEX_STARVATION</p>
+        </div>
+
+        <div className="space-y-4">
+          {faqData.map((faq, idx) => (
+            <div
+              key={idx}
+              className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] rounded-xl overflow-hidden transition-all duration-300"
+            >
+              <button
+                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                className="w-full p-5 text-left flex items-center justify-between text-[#E9D4C3] hover:text-[#F5F5F5] font-medium text-sm transition-colors"
+              >
+                <span>{faq.q}</span>
+                <HelpCircle className={`w-4 h-4 text-[#8A1A1A] transition-transform duration-300 ${activeFaq === idx ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {activeFaq === idx && (
+                <div className="px-5 pb-5 text-xs text-[#A8B3C4] leading-relaxed border-t border-[rgba(233,212,195,0.04)] pt-3 bg-[#0A1626]/20">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+    </main>
   );
 }
