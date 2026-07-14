@@ -2,14 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
-  // FIXED: Tells Axios to automatically forward HTTP-Only cookies/sessions across origins
-  withCredentials: true, 
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  withCredentials: true, // Crucial for passing HTTP-only session cookies
 });
 
-// Response interceptor for clear global error formatting
+// Clean response interceptor error capture formatting
 api.interceptors.response.use(
   (response) => response,
   (error) => {
