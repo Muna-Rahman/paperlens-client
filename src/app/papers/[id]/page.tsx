@@ -17,6 +17,13 @@ interface PaperDetails {
   keywords: string[];
 }
 
+interface Review {
+  _id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+}
+
 export default function PaperDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -26,12 +33,13 @@ export default function PaperDetailsPage() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Custom Reviews Simulation Hooks
-  const [reviews, setReviews] = useState([
-    { _id: '1', userName: 'Dr. Evelyn Vance', rating: 5, comment: 'Phenomenal vector indexing alignment. A foundational lookup study.' }
-  ]);
+  // Reviews now come from the backend instead of being simulated locally.
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -53,18 +61,44 @@ export default function PaperDetailsPage() {
       }
     };
 
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const res = await api.get(`/papers/${id}/reviews`);
+        setReviews(res.data.reviews || []);
+      } catch (err) {
+        console.error("Failed to load peer reviews:", err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
     fetchFullMetrics();
+    fetchReviews();
   }, [id]);
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    setReviews([
-      ...reviews,
-      { _id: Date.now().toString(), userName: 'Current User', rating: newRating, comment: newComment }
-    ]);
-    setNewComment('');
+    setSubmitting(true);
+    setReviewError('');
+
+    try {
+      const res = await api.post(`/papers/${id}/reviews`, {
+        rating: newRating,
+        comment: newComment,
+      });
+
+      // Prepend the newly created review (backend returns the saved doc).
+      setReviews((prev) => [res.data.review, ...prev]);
+      setNewComment('');
+      setNewRating(5);
+    } catch (err: any) {
+      setReviewError(err.message || 'Failed to publish review.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -159,17 +193,33 @@ export default function PaperDetailsPage() {
         <section className="mt-16 max-w-4xl backdrop-blur-[16px] bg-[rgba(233,212,195,0.04)] border border-[rgba(233,212,195,0.08)] rounded-2xl p-6 md:p-8">
           <h2 className="text-xl font-bold font-['Clash_Display'] text-[#E9D4C3] mb-6 tracking-wide">Peer Consensus Reviews</h2>
           
-          <div className="space-y-4 mb-8">
-            {reviews.map((rev) => (
-              <div key={rev._id} className="bg-[#0A1626]/40 border border-[rgba(233,212,195,0.06)] rounded-xl p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold text-[#E9D4C3]">{rev.userName}</span>
-                  <span className="text-xs font-mono text-[#8A1A1A]">{'★'.repeat(rev.rating)}</span>
+          {reviewsLoading ? (
+            <div className="space-y-3 mb-8">
+              {[1, 2].map((i) => (
+                <div key={i} className="h-16 rounded-xl border border-[rgba(233,212,195,0.06)] bg-[rgba(233,212,195,0.03)] animate-pulse" />
+              ))}
+            </div>
+          ) : reviews.length === 0 ? (
+            <p className="text-xs font-mono text-[#7C8FA9] mb-8">// NO_REVIEWS_SUBMITTED_YET — be the first to weigh in.</p>
+          ) : (
+            <div className="space-y-4 mb-8">
+              {reviews.map((rev) => (
+                <div key={rev._id} className="bg-[#0A1626]/40 border border-[rgba(233,212,195,0.06)] rounded-xl p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold text-[#E9D4C3]">{rev.userName}</span>
+                    <span className="text-xs font-mono text-[#8A1A1A]">{'★'.repeat(rev.rating)}</span>
+                  </div>
+                  <p className="text-xs text-[#A8B3C4] leading-relaxed">{rev.comment}</p>
                 </div>
-                <p className="text-xs text-[#A8B3C4] leading-relaxed">{rev.comment}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {reviewError && (
+            <div className="mb-4 p-3 rounded-lg bg-[#8A1A1A]/20 border border-[#8A1A1A] text-[#F5F5F5] text-xs font-mono">
+              {reviewError}
+            </div>
+          )}
 
           {/* Restricted Review Actions Input Form */}
           {isAuthenticated ? (
@@ -194,9 +244,10 @@ export default function PaperDetailsPage() {
               />
               <button 
                 type="submit"
-                className="px-4 py-2 bg-[#8A1A1A] hover:bg-[#4E0000] text-[#F5F5F5] font-mono text-xs uppercase tracking-wider rounded-lg transition-colors"
+                disabled={submitting}
+                className="px-4 py-2 bg-[#8A1A1A] hover:bg-[#4E0000] text-[#F5F5F5] font-mono text-xs uppercase tracking-wider rounded-lg transition-colors disabled:opacity-50"
               >
-                Publish Review
+                {submitting ? 'Publishing...' : 'Publish Review'}
               </button>
             </form>
           ) : (
