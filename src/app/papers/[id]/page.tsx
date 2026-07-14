@@ -11,6 +11,7 @@ interface PaperDetails {
   title: string;
   shortDescription: string;
   abstract: string;
+  authors: string[];
   field: string;
   year: number;
   citationCount: number;
@@ -156,6 +157,15 @@ export default function PaperDetailsPage() {
           {/* Technical Metadata Sticky Sidebar */}
           <div className="backdrop-blur-[16px] bg-[rgba(233,212,195,0.06)] border border-[rgba(233,212,195,0.12)] rounded-2xl p-6 space-y-6 lg:sticky lg:top-24">
             <h3 className="font-['Clash_Display'] text-lg font-bold text-[#E9D4C3] tracking-wide">Technical Footprint</h3>
+
+            {paper.authors && paper.authors.length > 0 && (
+              <div>
+                <h4 className="font-mono text-[10px] text-[#A8B3C4] uppercase tracking-wider mb-2">Authored By:</h4>
+                <p className="text-sm text-[#F5F5F5] leading-relaxed">
+                  {paper.authors.join(', ')}
+                </p>
+              </div>
+            )}
             
             <div className="space-y-4 font-mono text-xs">
               <div className="flex justify-between py-2 border-b border-[rgba(233,212,195,0.08)]">

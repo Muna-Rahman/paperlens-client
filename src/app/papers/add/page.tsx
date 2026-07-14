@@ -14,6 +14,7 @@ export default function AddPaperPage() {
     title: '',
     shortDescription: '',
     abstract: '',
+    authors: '',
     field: 'Artificial Intelligence',
     year: new Date().getFullYear(),
     citationCount: 0,
@@ -57,6 +58,7 @@ export default function AddPaperPage() {
         ...formData,
         year: Number(formData.year) || new Date().getFullYear(),
         citationCount: Number(formData.citationCount) || 0,
+        authors: formData.authors.split(',').map(a => a.trim()).filter(Boolean),
         keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean),
       };
 
@@ -113,6 +115,19 @@ export default function AddPaperPage() {
                 onChange={handleChange}
                 className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors"
                 placeholder="Brief single-sentence outline summary..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Authors (Comma Separated)</label>
+              <input
+                type="text"
+                name="authors"
+                required
+                value={formData.authors}
+                onChange={handleChange}
+                className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors"
+                placeholder="e.g., Ashish Vaswani, Noam Shazeer"
               />
             </div>
 
