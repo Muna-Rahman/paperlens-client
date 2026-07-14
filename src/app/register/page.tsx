@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import api from '@/lib/api';
+// FIX 1: Import the useAuth hook from your context
+import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -13,29 +14,21 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  // Connect to your global AuthContext engine
+  const { handleRegister } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+    
     try {
-      // POST straight to your Express backend register route configuration
-      const res = await api.post('/auth/register', {
-        name,
-        email,
-        password,
-      });
-
-      if (res.data.success) {
-        alert("Account provisioned and matrix initialized successfully!");
-        router.push('/explore');
-        router.refresh();
-      } else {
-        setError(res.data.message || 'Registration structural validation failure.');
-        setLoading(false);
-      }
+      // Triggers the AuthContext method safely
+      await handleRegister({ email, password, name });
+      router.push('/explore');
+      router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Network exception encountered during registration sequence.');
+      setError(err.message || 'Registration failed.');
       setLoading(false);
     }
   };
@@ -54,7 +47,8 @@ export default function RegisterPage() {
           </div>
         )}
 
-        <form onSubmit={handleRegister} className="space-y-4">
+        {/* FIX 2: Bind the submission process to handleSubmit */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs uppercase tracking-wider font-mono text-[#A8B3C4] mb-2">Name</label>
             <input

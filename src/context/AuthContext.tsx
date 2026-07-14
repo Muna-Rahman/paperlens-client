@@ -1,62 +1,59 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '@/lib/api';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { authClient } from '@/lib/auth-client';
 
 interface AuthContextType {
-  user: User | null;
+  user: any;
   loading: boolean;
-  login: (credentials: any) => Promise<void>;
-  register: (credentials: any) => Promise<void>;
+  handleLogin: (credentials: any) => Promise<void>;
+  handleRegister: (credentials: any) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const toggleState = useState<User | null>(null);
-  const user = toggleState[0];
-  const setUser = toggleState[1];
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<any>(null);
+  
+  // FIX: Call the hook correctly at the top level of the function component body
+  const { data: sessionData, isPending } = authClient.useSession();
 
+  // Keep state synchronized when the sessionData hook values change
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        // Supposing there's a /api/auth/me or verify endpoint
-        const res = await api.get('/auth/me'); 
-        setUser(res.data.user);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuthStatus();
-  }, []);
+    if (sessionData) {
+      setUser(sessionData.user);
+    } else {
+      setUser(null);
+    }
+  }, [sessionData]);
 
   const handleLogin = async (credentials: any) => {
-    const res = await api.post('/auth/login', credentials);
-    setUser(res.data.user);
+    const { data, error } = await authClient.signIn.email({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    if (error) throw new Error(error.message);
+    setUser(data?.user);
   };
 
   const handleRegister = async (credentials: any) => {
-    const res = await api.post('/auth/register', credentials);
-    setUser(res.data.user);
+    const { data, error } = await authClient.signUp.email({
+      email: credentials.email,
+      password: credentials.password,
+      name: credentials.name || credentials.email.split('@')[0],
+    });
+    if (error) throw new Error(error.message);
+    setUser(data?.user);
   };
 
-  const handleLogout = async () => {
-    await api.post('/auth/logout');
+  const logout = async () => {
+    await authClient.signOut();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login: handleLogin, register: handleRegister, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, loading: isPending, handleLogin, handleRegister, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -64,6 +61,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
