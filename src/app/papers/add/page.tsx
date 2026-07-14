@@ -23,10 +23,27 @@ export default function AddPaperPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
+    if (name === 'year' || name === 'citationCount') {
+      // Allow the field to be temporarily empty while the user is typing,
+      // instead of snapping back to 0 (which caused the "leading zero" issue).
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value === '' ? '' : Number(value),
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'year' || name === 'citationCount' ? Number(value) : value,
+      [name]: value,
     }));
+  };
+
+  // Select existing text on focus so typing a new number replaces it
+  // instead of appending after it (e.g. "0" + "5" -> "05").
+  const handleNumberFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,11 +55,13 @@ export default function AddPaperPage() {
       // Format keywords string comma separation into clean list array if needed by backend
       const formattedData = {
         ...formData,
+        year: Number(formData.year) || new Date().getFullYear(),
+        citationCount: Number(formData.citationCount) || 0,
         keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean),
       };
 
       await api.post('/papers', formattedData);
-      router.push('/papers'); // Redirect back to active user management portfolio
+      router.push('/explore'); // Redirect to explore page where the new paper appears
     } catch (err: any) {
       setError(err.message || 'Failed to index new research paper.');
     } finally {
@@ -120,9 +139,13 @@ export default function AddPaperPage() {
                   className="w-full bg-[#0A1626]/60 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors cursor-pointer text-sm text-[#F5F5F5]"
                 >
                   <option value="Artificial Intelligence">Artificial Intelligence</option>
-                  <option value="Computer Vision">Computer Vision</option>
                   <option value="Natural Language Processing">Natural Language Processing</option>
+                  <option value="Computer Vision">Computer Vision</option>
                   <option value="Data Science">Data Science</option>
+                  <option value="Bioinformatics">Bioinformatics</option>
+                  <option value="Cybersecurity">Cybersecurity</option>
+                  <option value="Quantum Computing">Quantum Computing</option>
+                  <option value="Human-Computer Interaction">Human-Computer Interaction</option>
                 </select>
               </div>
 
@@ -134,6 +157,7 @@ export default function AddPaperPage() {
                   required
                   value={formData.year}
                   onChange={handleChange}
+                  onFocus={handleNumberFocus}
                   className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors font-mono"
                 />
               </div>
@@ -147,6 +171,7 @@ export default function AddPaperPage() {
                   min="0"
                   value={formData.citationCount}
                   onChange={handleChange}
+                  onFocus={handleNumberFocus}
                   className="w-full bg-[#0A1626]/50 border border-[rgba(233,212,195,0.15)] rounded-lg px-4 py-3 focus:outline-none focus:border-[#8A1A1A] transition-colors font-mono"
                 />
               </div>
