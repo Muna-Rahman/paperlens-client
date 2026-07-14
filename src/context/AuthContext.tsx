@@ -5,6 +5,7 @@ import { authClient } from '@/lib/auth-client';
 
 interface AuthContextType {
   user: any;
+  isAuthenticated: boolean;
   loading: boolean;
   handleLogin: (credentials: any) => Promise<void>;
   handleRegister: (credentials: any) => Promise<void>;
@@ -53,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading: isPending, handleLogin, handleRegister, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, loading: isPending, handleLogin, handleRegister, logout }}>
       {children}
     </AuthContext.Provider>
   );
