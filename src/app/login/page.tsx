@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-// Import your custom Axios client layout instance instead of authClient
 import api from '@/lib/api'; 
-import { useAuth } from '@/context/AuthContext'; // If you have a context to toggle global state
+import { useAuth } from '@/context/AuthContext'; 
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,6 +12,9 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  
+  // Connect to your Context engine to populate global login states if applicable
+  const authContext = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,14 +22,20 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // FIXED: Routed directly to your actual Express backend controller path layout
       const res = await api.post('/auth/login', {
         email,
         password,
       });
 
-      if (res.data.success) {
-        // Redirect directly to the premium Explore grid instead of /papers
+      // Better Auth returns a user/session structure directly inside res.data on success
+      if (res.data && (res.data.user || res.data.success !== false)) {
+        
+        // Optional: Force synchronize user memory into global React Context state if present
+        if (authContext && typeof (authContext as any).setUser === 'function') {
+          (authContext as any).setUser(res.data.user);
+        }
+
+        // Clean client-side push to the premium view matching application routes
         router.push('/explore');
         router.refresh();
       } else {
@@ -35,7 +43,9 @@ export default function LoginPage() {
         setLoading(false);
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication sequence failed.');
+      // Pull clean error responses out of Axios rejection interceptor payloads safely
+      const backendMessage = err.response?.data?.message || err.message;
+      setError(backendMessage || 'Authentication sequence failed.');
       setLoading(false);
     }
   };

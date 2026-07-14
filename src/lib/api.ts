@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
-  withCredentials: true, // Crucial for passing HTTP-only session cookies
+  withCredentials: true, // Crucial for receiving and sending httpOnly cookies
 });
 
-// Clean response interceptor error capture formatting
+// Interceptor for uniform error parsing
 api.interceptors.response.use(
   (response) => response,
   (error) => {
