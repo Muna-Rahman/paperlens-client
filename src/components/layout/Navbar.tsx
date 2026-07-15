@@ -73,6 +73,24 @@ export default function Navbar() {
                 Manage Papers
               </Link>
 
+              <Link
+                href="/methodology"
+                className={`text-sm transition-colors ${
+                  pathname === '/methodology' ? 'text-[#8A1A1A] font-semibold' : 'text-[#A8B3C4] hover:text-[#F5F5F5]'
+                }`}
+              >
+                Methodology
+              </Link>
+
+              <Link
+                href="/contact"
+                className={`text-sm transition-colors ${
+                  pathname === '/contact' ? 'text-[#8A1A1A] font-semibold' : 'text-[#A8B3C4] hover:text-[#F5F5F5]'
+                }`}
+              >
+                Contact
+              </Link>
+
               <span className="text-xs font-mono text-[#7C8FA9] bg-[rgba(233,212,195,0.08)] px-2 py-1 rounded border border-[rgba(233,212,195,0.1)]">
                 {user?.name}
               </span>

@@ -1,143 +1,196 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ShieldCheck, Eye, EyeOff, AlertTriangle } from "lucide-react";
+import { Layers, Sigma, GitCompareArrows, ListOrdered } from "lucide-react";
 
 export default function MethodologyPage() {
-  const router = useRouter();
-
-  // Controlled input form states
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  // Dynamic input validation error flags
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [systemAlert, setSystemAlert] = useState<string | null>(null);
-
-  // Double check form parameters before attempting backend network dispatch loops
-  const validateForm = () => {
-    const activeErrors: { email?: string; password?: string } = {};
-    
-    if (!email) {
-      activeErrors.email = "Please enter your email address to log in.";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      activeErrors.email = "That email format does not look right. Please double check.";
-    }
-
-    if (!password) {
-      activeErrors.password = "Please enter your password.";
-    } else if (password.length < 6) {
-      activeErrors.password = "Your password must be at least 6 characters long.";
-    }
-
-    setErrors(activeErrors);
-    return Object.keys(activeErrors).length === 0;
-  };
-
-  const handleStandardSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSystemAlert(null);
-
-    if (validateForm()) {
-      // Temporary status message displaying until standard server api endpoints are connected
-      setSystemAlert("Form values verified! Standard secure authentication will be available once the backend API is connected.");
-    }
-  };
-
   return (
-    <div className="max-w-md mx-auto py-16 px-4 flex flex-col items-center justify-center min-h-[70vh]">
-      
-      {/* 🧊 Glass-themed Sign-In Panel */}
-      <div className="w-full glass-card p-8 rounded-lg border border-[#E9D4C3]/10 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8A1A1A] via-[#7C8FA9] to-transparent" />
-        
-        {/* Decorative Panel Header */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-12 h-12 rounded-full border border-[#8A1A1A]/30 bg-[#8A1A1A]/5 flex items-center justify-center mb-3">
-            <ShieldCheck className="w-6 h-6 text-[#8A1A1A] shadow-glow-red" />
+    <div className="max-w-4xl mx-auto py-8 px-4 pb-24 space-y-12">
+
+      {/* Page Title Header */}
+      <div>
+        <span className="font-mono text-[10px] text-[#7C8FA9] tracking-widest block mb-1">
+          // HOW THE MATCHING ENGINE WORKS
+        </span>
+        <h1 className="font-display text-3xl font-bold text-white tracking-tight">
+          Methodology
+        </h1>
+        <p className="font-sans text-xs text-[#A8B3C4] leading-relaxed mt-3 max-w-2xl">
+          Every similarity score you see on PaperLens comes from real text analysis, not a
+          random or hand-picked number. This page walks through exactly how the engine turns
+          a paper&apos;s title, abstract, and keywords into the percentages shown on the
+          Similarity Stamp.
+        </p>
+      </div>
+
+      {/* Step 1 & 2: TF-IDF and Cosine Similarity, side by side like the About page */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10 space-y-3">
+          <div className="flex items-center space-x-2 text-[#E9D4C3] font-display font-bold text-sm uppercase">
+            <Layers className="w-4 h-4 text-[#8A1A1A]" />
+            <span>Step 1 — TF-IDF</span>
           </div>
-          <span className="font-mono text-[9px] text-[#7C8FA9] tracking-widest uppercase block">// SECURE GATEWAY</span>
-          <h1 className="font-display text-2xl font-bold text-white tracking-tight mt-1">SIGN IN</h1>
+          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
+            TF-IDF stands for <span className="text-[#E9D4C3]">Term Frequency – Inverse Document
+            Frequency</span>. It converts each paper&apos;s combined title, abstract, and
+            keywords into a list of weighted words. A word gets a{" "}
+            <span className="text-[#E9D4C3]">higher</span> weight the more often it appears in
+            that specific paper, but a <span className="text-[#E9D4C3]">lower</span> weight the
+            more common it is across the whole library. Words like &ldquo;the&rdquo; or
+            &ldquo;using&rdquo; are filtered out entirely before scoring, so they never affect
+            the result. The end result is a vector — a list of numbers — that represents what
+            each paper is actually about, rather than just the words it happens to contain.
+          </p>
         </div>
 
-        {/* Dynamic Status Alert Banner */}
-        {systemAlert && (
-          <div className="mb-6 p-3 bg-red-950/20 border border-red-900/40 rounded flex items-start space-x-2 font-mono text-[10px] text-red-400">
-            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-            <span>{systemAlert}</span>
+        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10 space-y-3">
+          <div className="flex items-center space-x-2 text-[#E9D4C3] font-display font-bold text-sm uppercase">
+            <Sigma className="w-4 h-4 text-[#8A1A1A]" />
+            <span>Step 2 — Cosine Similarity</span>
           </div>
-        )}
+          <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
+            Once every paper has been turned into a TF-IDF vector, comparing two papers becomes
+            a geometry problem. Cosine similarity measures the{" "}
+            <span className="text-[#E9D4C3]">angle</span> between two vectors rather than their
+            raw length, which means a short abstract and a long one can still score highly if
+            they cover the same concepts. A score of{" "}
+            <span className="text-[#E9D4C3]">1.0</span> means the vectors point in exactly the
+            same direction (identical topic emphasis); a score of{" "}
+            <span className="text-[#E9D4C3]">0</span> means they share no meaningful terms at
+            all.
+          </p>
+        </div>
+      </div>
 
-        {/* Primary Input Form */}
-        <form onSubmit={handleStandardSubmit} className="space-y-5">
-          
-          {/* Email input field layout */}
-          <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
-              EMAIL ADDRESS:
-            </label>
-            <input
-              type="text"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (errors.email) setErrors({ ...errors, email: undefined });
-              }}
-              placeholder="operator@paperlens.dat"
-              className={`w-full bg-[#0A1626] border rounded px-3 py-2 text-xs font-mono text-white focus:outline-none transition-colors ${
-                errors.email ? "border-red-600 focus:border-red-500" : "border-[#E9D4C3]/15 focus:border-[#8A1A1A]"
-              }`}
-            />
-            {errors.email && (
-              <span className="font-mono text-[9px] text-red-400 block mt-1 animate-pulse">
-                &gt; {errors.email}
-              </span>
-            )}
+      {/* Step 3: Paper matching process */}
+      <div className="glass-card p-6 rounded-lg border border-[#8A1A1A]/20 bg-gradient-to-r from-[#8A1A1A]/5 to-transparent">
+        <h3 className="font-mono text-xs text-[#E9D4C3] uppercase tracking-wider mb-4 flex items-center space-x-2">
+          <GitCompareArrows className="w-4 h-4 text-[#8A1A1A]" />
+          <span>MATCHING_PIPELINE.txt</span>
+        </h3>
+        <ol className="font-mono text-[11px] text-[#7C8FA9] space-y-2.5">
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">01.</span>
+            Pull every paper&apos;s title, short description, abstract, and keywords into a
+            single block of text.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">02.</span>
+            Tokenize that text — lowercase everything, strip punctuation, and drop stop words
+            and anything shorter than three characters.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">03.</span>
+            Compute how many papers in the library each remaining word appears in, then use
+            that to build an inverse-document-frequency weight per word.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">04.</span>
+            Build a TF-IDF vector for the selected paper and for every other paper in the
+            library, excluding the paper being viewed from its own comparison pool.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">05.</span>
+            Calculate the cosine similarity between the selected paper&apos;s vector and every
+            other paper&apos;s vector.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">06.</span>
+            Nudge the raw score slightly upward when two papers share the same research field
+            or overlapping keywords — this rewards matches a reader would intuitively agree
+            with, on top of the pure text signal.
+          </li>
+          <li className="flex items-start">
+            <span className="text-[#8A1A1A] mr-2">07.</span>
+            Sort every candidate by final score, descending, and keep the top four. Those four
+            are what render on the Related Papers section with their Similarity Stamp.
+          </li>
+        </ol>
+      </div>
+
+      {/* Step 4: Worked example */}
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 text-[#E9D4C3] font-display font-bold text-sm uppercase">
+          <ListOrdered className="w-4 h-4 text-[#8A1A1A]" />
+          <span>Worked Example</span>
+        </div>
+        <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed max-w-2xl">
+          Here&apos;s the actual arithmetic on a tiny, three-paper library, so the math isn&apos;t
+          just an abstract claim.
+        </p>
+
+        <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10 overflow-x-auto">
+          <table className="w-full text-left font-mono text-[10px] text-[#A8B3C4] border-collapse">
+            <thead>
+              <tr className="text-[#E9D4C3] uppercase tracking-wider">
+                <th className="pb-2 pr-4">Paper</th>
+                <th className="pb-2">Text (after stop-word removal)</th>
+              </tr>
+            </thead>
+            <tbody className="align-top">
+              <tr className="border-t border-[rgba(233,212,195,0.08)]">
+                <td className="py-2 pr-4 text-[#8A1A1A]">A (target)</td>
+                <td className="py-2">neural network image classification</td>
+              </tr>
+              <tr className="border-t border-[rgba(233,212,195,0.08)]">
+                <td className="py-2 pr-4 text-[#8A1A1A]">B</td>
+                <td className="py-2">neural network text classification</td>
+              </tr>
+              <tr className="border-t border-[rgba(233,212,195,0.08)]">
+                <td className="py-2 pr-4 text-[#8A1A1A]">C</td>
+                <td className="py-2">protein folding simulation</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10 space-y-3">
+            <h4 className="font-mono text-[10px] text-[#E9D4C3] uppercase tracking-wider">
+              // Term weights (IDF)
+            </h4>
+            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
+              With 3 papers total, a term that shows up in only one paper (like{" "}
+              <span className="text-[#E9D4C3]">image</span>) gets a heavier weight than a term
+              shared across two papers (like <span className="text-[#E9D4C3]">neural</span>):
+            </p>
+            <ul className="font-mono text-[10px] text-[#7C8FA9] space-y-1">
+              <li>neural, network, classification → weight ≈ 0.92 each</li>
+              <li>image → weight ≈ 1.39</li>
+              <li>text → weight ≈ 1.39</li>
+            </ul>
           </div>
 
-          {/* Password input field layout */}
-          <div className="space-y-1">
-            <label className="font-mono text-[10px] text-[#7C8FA9] uppercase tracking-wider block">
-              PASSWORD:
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors({ ...errors, password: undefined });
-                }}
-                placeholder="••••••••••••"
-                className={`w-full bg-[#0A1626] border rounded pl-3 pr-10 py-2 text-xs font-mono text-white focus:outline-none transition-colors ${
-                  errors.password ? "border-red-600 focus:border-red-500" : "border-[#E9D4C3]/15 focus:border-[#8A1A1A]"
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-2.5 text-[#7C8FA9] hover:text-[#E9D4C3] transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+          <div className="glass-card p-6 rounded-lg border border-[#E9D4C3]/10 space-y-3">
+            <h4 className="font-mono text-[10px] text-[#E9D4C3] uppercase tracking-wider">
+              // Cosine similarity
+            </h4>
+            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
+              Paper A and Paper B share three of their four weighted terms (
+              <span className="text-[#E9D4C3]">neural</span>,{" "}
+              <span className="text-[#E9D4C3]">network</span>,{" "}
+              <span className="text-[#E9D4C3]">classification</span>), and only differ on one
+              (<span className="text-[#E9D4C3]">image</span> vs.{" "}
+              <span className="text-[#E9D4C3]">text</span>). Comparing their vectors gives:
+            </p>
+            <div className="font-mono text-[11px] text-[#E9D4C3] bg-[#0A1626]/60 rounded px-3 py-2">
+              similarity(A, B) ≈ 0.57 → 57%
             </div>
-            {errors.password && (
-              <span className="font-mono text-[9px] text-red-400 block mt-1 animate-pulse">
-                &gt; {errors.password}
-              </span>
-            )}
+            <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed">
+              Paper C shares no vocabulary with Paper A at all, so:
+            </p>
+            <div className="font-mono text-[11px] text-[#E9D4C3] bg-[#0A1626]/60 rounded px-3 py-2">
+              similarity(A, C) ≈ 0.00 → 0%
+            </div>
           </div>
+        </div>
 
-          <button
-            type="submit"
-            className="w-full py-2.5 bg-[#8A1A1A]/20 hover:bg-[#8A1A1A]/40 border border-[#8A1A1A]/50 text-[#E9D4C3] font-mono text-xs uppercase tracking-wider transition-all rounded font-bold mt-2"
-          >
-            EXECUTE SIGN IN
-          </button>
-        </form>
-
+        <p className="font-sans text-xs text-[#7C8FA9] leading-relaxed max-w-2xl">
+          On the live platform, this raw cosine score is what drives the ranking — it decides
+          which four papers are chosen and in what order. The percentage shown on the badge
+          gets a small boost for shared field or keywords and is kept within a readable band, so
+          two very different papers never render as a suspicious &ldquo;0% match&rdquo; and two
+          near-duplicates don&apos;t all cluster at exactly 100%.
+        </p>
       </div>
     </div>
   );
