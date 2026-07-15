@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📄 PaperLens
 
-## Getting Started
+PaperLens is a full-stack academic paper exploration platform that helps users discover, organize, and analyze research papers. The platform features a recommendation engine powered by TF-IDF and Cosine Similarity, enabling users to find papers with similar titles, abstracts, and keywords. With a modern glassmorphic interface and intuitive user experience, PaperLens makes academic research more accessible and engaging.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🌐 Live Demo : https://paperlens-client.vercel.app/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+✨ Features
+🔐 Secure user authentication using JWT and HTTP-only cookies
+📚 Browse and search research papers
+🔎 Filter papers by keywords, categories, and publication details
+📄 View detailed paper information
+🤖 Get related paper recommendations using TF-IDF and Cosine Similarity
+⭐ Submit ratings and reviews for research papers
+➕ Add and manage your own research papers
+📱 Fully responsive design for desktop and mobile devices
+🎨 Modern glassmorphism-inspired user interface
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+🛠 Technologies Used
 
-To learn more about Next.js, take a look at the following resources:
+Frontend:
+Next.js
+React
+TypeScript
+Tailwind CSS
+Axios
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Backend:
+Node.js
+Express.js
+MongoDB
+Mongoose
+Authentication
+JWT
+HTTP-only Cookies
+bcrypt
+Recommendation Engine
+TF-IDF
+Cosine Similarity
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+📦 Dependencies
+Frontend:
+Next.js
+React
+TypeScript
+Tailwind CSS
+Axios
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Backend:
+Express
+Mongoose
+JWT
+bcrypt
+Cookie Parser
+CORS
+dotenv
