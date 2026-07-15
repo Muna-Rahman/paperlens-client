@@ -24,14 +24,26 @@ export default function ExplorePage() {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 12;
+
+  // Reset to page 1 whenever the filters change, so we don't get stuck on
+  // an out-of-range page after a new search/filter narrows the result set.
+  useEffect(() => {
+    setPage(1);
+  }, [search, fieldFilter, sortBy]);
 
   useEffect(() => {
     const fetchPapers = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/papers?search=${search}&field=${fieldFilter}&sort=${sortBy}`);
+        const res = await api.get(
+          `/papers?search=${search}&field=${fieldFilter}&sort=${sortBy}&page=${page}&limit=${PAGE_SIZE}`
+        );
         setPapers(res.data.papers);
         setTotalCount(res.data.totalAvailable);
+        setTotalPages(res.data.totalPages || 1);
       } catch (err) {
         console.error("Error connecting with structural catalog:", err);
       } finally {
@@ -44,7 +56,7 @@ export default function ExplorePage() {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search, fieldFilter, sortBy, isAuthenticated]);
+  }, [search, fieldFilter, sortBy, page, isAuthenticated]);
 
   return (
     <main className="min-h-screen w-full bg-[#0A1626] text-[#F5F5F5] font-['General_Sans'] px-6 py-12 relative overflow-hidden">
@@ -57,7 +69,8 @@ export default function ExplorePage() {
             Research Explorer
           </h1>
           <p className="text-[#A8B3C4] text-sm mt-1 font-mono">
-            Database Engine: Showing {papers.length} of {totalCount} indexed entries.
+            Database Engine: Showing {papers.length} of {totalCount} indexed entries
+            {totalPages > 1 ? ` — Page ${page} of ${totalPages}` : ''}.
           </p>
         </div>
       </div>
@@ -160,6 +173,30 @@ export default function ExplorePage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {!loading && isAuthenticated && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 mt-10 font-mono text-xs">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-4 py-2 rounded-lg border border-[rgba(233,212,195,0.15)] text-[#E9D4C3] hover:border-[#8A1A1A] hover:bg-[rgba(233,212,195,0.06)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[rgba(233,212,195,0.15)] disabled:hover:bg-transparent transition-colors"
+            >
+              ← Prev
+            </button>
+
+            <span className="text-[#A8B3C4] px-2">
+              Page <span className="text-[#F5F5F5]">{page}</span> / {totalPages}
+            </span>
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="px-4 py-2 rounded-lg border border-[rgba(233,212,195,0.15)] text-[#E9D4C3] hover:border-[#8A1A1A] hover:bg-[rgba(233,212,195,0.06)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-[rgba(233,212,195,0.15)] disabled:hover:bg-transparent transition-colors"
+            >
+              Next →
+            </button>
           </div>
         )}
       </section>
