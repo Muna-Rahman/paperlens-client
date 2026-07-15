@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 border-t border-slateBlue/10">
           <div className="flex items-center space-x-4">
             <a
-              href="https://github.com/paperlens"
+        
               target="_blank"
               rel="noopener noreferrer"
               aria-label="PaperLens on GitHub"
@@ -20,7 +20,7 @@ export default function Footer() {
               <FaGithub className="w-3.5 h-3.5" />
             </a>
             <a
-              href="https://twitter.com/paperlens"
+              
               target="_blank"
               rel="noopener noreferrer"
               aria-label="PaperLens on Twitter/X"
@@ -29,7 +29,7 @@ export default function Footer() {
               <FaTwitter className="w-3.5 h-3.5" />
             </a>
             <a
-              href="https://linkedin.com/company/paperlens"
+             
               target="_blank"
               rel="noopener noreferrer"
               aria-label="PaperLens on LinkedIn"
